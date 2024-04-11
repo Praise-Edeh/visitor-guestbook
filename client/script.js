@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const messageInput = document.getElementById('messageInput');
     const messageContainer = document.getElementById('messageContainer');
 
-    // Fetch messages from the server and display them
+    // Fetching messages from the server and displaying them
     async function fetchMessages() {
         const response = await fetch('/api/messages');
         const messages = await response.json();
         messageContainer.innerHTML = messages.map(message => createMessageHTML(message)).join('');
     }
 
-    // Create HTML for each message
+    // Creating HTML for each message
     function createMessageHTML(message) {
         return `
             <div class="message">
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
-    // Submit message form
+    // Submitting message form
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Delete message
+    // Deleting message
     window.deleteMessage = async (e) => {
         const messageId = e.target.dataset.id;
         await fetch(`/api/messages/${messageId}`, {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fetchMessages();
     };
 
-    // Like message
+    // Liking message
     window.likeMessage = async (e) => {
         const messageId = e.target.dataset.id;
         await fetch(`/api/messages/${messageId}/like`, {
