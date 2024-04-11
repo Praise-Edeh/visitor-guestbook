@@ -1,50 +1,32 @@
-const messageForm = document.getElementById('messageForm');
-const messageInput = document.getElementById('messageInput');
-const messageList = document.getElementById('messageList');
+document.addEventListener('DOMContentLoaded', async () => {
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const messageContainer = document.getElementById('messageContainer');
 
-messageForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const message = messageInput.value;
-    if (message.trim() === '') return;
-    try {
-        const response = await fetch('/api/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message })
-        });
-        if (!response.ok) {
-            throw new Error('Failed to submit message');
-        }
-        messageInput.value = '';
-        fetchMessages();
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-async function fetchMessages() {
-    try {
+    // Fetch messages from the server and display them
+    async function fetchMessages() {
         const response = await fetch('/api/messages');
-        if (!response.ok) {
-            throw new Error('Failed to fetch messages');
-        }
         const messages = await response.json();
-        renderMessages(messages);
-    } catch (error) {
-        console.error(error);
+        messageContainer.innerHTML = messages.map(message => `<div class="message">${message.text}</div>`).join('');
     }
-}
 
-function renderMessages(messages) {
-    messageList.innerHTML = '';
-    messages.forEach(message => {
-        const li = document.createElement('li');
-        li.textContent = message.message;
-        messageList.appendChild(li);
+    // Submit message form
+    messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = messageInput.value.trim();
+        if (text !== '') {
+            await fetch('/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+            messageInput.value = '';
+            await fetchMessages();
+        }
     });
-}
 
-// Fetch messages on page load
-fetchMessages();
+    // Initial fetch of messages
+    await fetchMessages();
+});

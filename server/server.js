@@ -1,40 +1,38 @@
 const express = require('express');
-const sqlite3 = require('better-sqlite3');
+const cors = require('cors');
+const sqlite = require('better-sqlite3');
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
-const db = sqlite3('guestbook.db');
-
-// Create table if not exists
-db.prepare(`
-    CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY,
-        text TEXT
-    )
-`).run();
-
-// Middleware to parse JSON request bodies
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// API route to get all messages
+// SQLite database setup
+const db = new sqlite('guestbook.db');
+db.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT)');
+
+// Seed data
+db.prepare('INSERT INTO messages (text) VALUES (?)').run('Welcome to the guestbook!');
+
+// Routes
 app.get('/api/messages', (req, res) => {
     const messages = db.prepare('SELECT * FROM messages').all();
     res.json(messages);
 });
 
-// API route to add a new message
 app.post('/api/messages', (req, res) => {
     const { text } = req.body;
     if (text) {
-        const insert = db.prepare('INSERT INTO messages (text) VALUES (?)');
-        insert.run(text);
-        res.sendStatus(201);
+        const stmt = db.prepare('INSERT INTO messages (text) VALUES (?)');
+        const result = stmt.run(text);
+        res.status(201).send('Message added successfully');
     } else {
         res.status(400).send('Invalid message');
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
