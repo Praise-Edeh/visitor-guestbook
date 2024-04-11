@@ -11,7 +11,7 @@ app.use(express.json());
 
 // SQLite database setup
 const db = new sqlite('guestbook.db');
-db.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT)');
+db.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT, likes INTEGER DEFAULT 0)');
 
 // Seed data
 db.prepare('INSERT INTO messages (text) VALUES (?)').run('Welcome to the guestbook!');
@@ -31,6 +31,18 @@ app.post('/api/messages', (req, res) => {
     } else {
         res.status(400).send('Invalid message');
     }
+});
+
+app.delete('/api/messages/:id', (req, res) => {
+    const { id } = req.params;
+    const result = db.prepare('DELETE FROM messages WHERE id = ?').run(id);
+    res.send('Message deleted successfully');
+});
+
+app.put('/api/messages/:id/like', (req, res) => {
+    const { id } = req.params;
+    const result = db.prepare('UPDATE messages SET likes = likes + 1 WHERE id = ?').run(id);
+    res.send('Like added successfully');
 });
 
 app.listen(PORT, () => {

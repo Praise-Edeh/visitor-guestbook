@@ -7,7 +7,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function fetchMessages() {
         const response = await fetch('/api/messages');
         const messages = await response.json();
-        messageContainer.innerHTML = messages.map(message => `<div class="message">${message.text}</div>`).join('');
+        messageContainer.innerHTML = messages.map(message => createMessageHTML(message)).join('');
+    }
+
+    // Create HTML for each message
+    function createMessageHTML(message) {
+        return `
+            <div class="message">
+                <button class="delete-btn" data-id="${message.id}" onclick="deleteMessage(event)">Delete</button>
+                <button class="like-btn" data-id="${message.id}" onclick="likeMessage(event)">Like</button>
+                ${message.text}
+            </div>
+        `;
     }
 
     // Submit message form
@@ -26,6 +37,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             await fetchMessages();
         }
     });
+
+    // Delete message
+    window.deleteMessage = async (e) => {
+        const messageId = e.target.dataset.id;
+        await fetch(`/api/messages/${messageId}`, {
+            method: 'DELETE'
+        });
+        await fetchMessages();
+    };
+
+    // Like message
+    window.likeMessage = async (e) => {
+        const messageId = e.target.dataset.id;
+        await fetch(`/api/messages/${messageId}/like`, {
+            method: 'PUT'
+        });
+        await fetchMessages();
+    };
 
     // Initial fetch of messages
     await fetchMessages();
