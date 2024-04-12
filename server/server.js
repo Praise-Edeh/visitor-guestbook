@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const sqlite = require('better-sqlite3');
+import express from "express";
+import cors from "cors";
+import sqlite from "better-sqlite3";
 
 const app = express();
 const PORT = 3000;
@@ -12,9 +12,6 @@ app.use(express.json());
 // SQLite database setup
 const db = new sqlite('guestbook.db');
 db.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT, likes INTEGER DEFAULT 0)');
-
-// Seed data
-require('./seed');
 
 // Routes
 app.get('/api/messages', (req, res) => {

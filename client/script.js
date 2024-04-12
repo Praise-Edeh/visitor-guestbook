@@ -57,5 +57,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Initial fetch of messages
-    await fetchMessages();
+    fetchMessages();
 });
