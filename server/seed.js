@@ -1,4 +1,4 @@
-const sqlite = require('better-sqlite3');
+import sqlite from 'better-sqlite3';
 
 // SQLite database setup
 const db = new sqlite('guestbook.db');

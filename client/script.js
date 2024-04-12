@@ -1,16 +1,17 @@
-document.addEventListener('DOMContentLoaded', async () => {
+
+    // CHANGE LOCAL HOST URL FOR THE RENDER SERVER URL
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const messageContainer = document.getElementById('messageContainer');
 
-    // Fetch messages from the server and display them
+    // Fetching messages from the server and displaying them
     async function fetchMessages() {
-        const response = await fetch('/api/messages');
+        const response = await fetch('http://localhost:3000/api/messages');
         const messages = await response.json();
         messageContainer.innerHTML = messages.map(message => createMessageHTML(message)).join('');
     }
 
-    // Create HTML for each message
+    // Creating HTML for each message
     function createMessageHTML(message) {
         return `
             <div class="message">
@@ -21,12 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
-    // Submit message form
+    // Submitting message form
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
         if (text !== '') {
-            await fetch('/api/messages', {
+            await fetch('http://localhost:3000/api/messages', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Delete message
     window.deleteMessage = async (e) => {
         const messageId = e.target.dataset.id;
-        await fetch(`/api/messages/${messageId}`, {
+        await fetch(`http://localhost:3000/api/messages/${messageId}`, {
             method: 'DELETE'
         });
         await fetchMessages();
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Like message
     window.likeMessage = async (e) => {
         const messageId = e.target.dataset.id;
-        await fetch(`/api/messages/${messageId}/like`, {
+        await fetch(`http://localhost:3000/api/messages/${messageId}/like`, {
             method: 'PUT'
         });
         await fetchMessages();
@@ -58,4 +59,3 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initial fetch of messages
     fetchMessages();
-});
